@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Library</title>
+    <link rel="stylesheet" href="~/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Engineering College Book Library</h1>
+        <label for="year">Select Year:</label>
+        <select id="year" name="year" onchange="fetchBooks()">
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+        </select>
+        <div id="bookList">
+            @if (Model?.Any() == true)
+            {
+                <ul>
+                    @foreach (var book in Model)
+                    {
+                        <li>@book.Title by @book.Author</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>No books available for the selected year.</p>
+            }
+        </div>
+    </div>
+    <script>
+        function fetchBooks() {
+            const year = document.getElementById('year').value;
+            fetch(`/Books/GetBooksByYear?year=${year}`)
+                .then(response => response.json())
+                .then(data => {
+                    const bookList = document.getElementById('bookList');
+                    bookList.innerHTML = '';
+                    if (data.length > 0) {
+                        const ul = document.createElement('ul');
+                        data.forEach(book => {
+                            const li = document.createElement('li');
+                            li.textContent = `${book.title} by ${book.author}`;
+                            ul.appendChild(li);
+                        });
+                        bookList.appendChild(ul);
+                    } else {
+                        bookList.innerHTML = '<p>No books available for the selected year.</p>';
+                    }
+                });
+        }
+    </script>
+</body>
+</html>
